@@ -20,4 +20,6 @@ pub enum BrowserError {
     URLError(#[from] url::ParseError),
     #[error("I/O error: {0}")]
     IOError(#[from] std::io::Error),
+    #[error("HTTP error: {0} {1}")]
+    HttpError(u16, String),
 }

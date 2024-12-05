@@ -27,12 +27,21 @@ impl NetworkClient {
     }
 
     pub async fn fetch(&self, url: &str) -> Result<String, BrowserError> {
-        let url = Url::parse(url)?;
+        let url = Url::parse(url).map_err(BrowserError::URLError)?;
         let response = self.client.get(url)
             .send()
-            .await?
-            .text()
-            .await?;
-        Ok(response)
+            .await
+            .map_err(BrowserError::NetworkError)?;
+            
+        if !response.status().is_success() {
+            return Err(BrowserError::HttpError(
+                response.status().as_u16(),
+                response.status().to_string()
+            ));
+        }
+        
+        response.text()
+            .await
+            .map_err(BrowserError::NetworkError)
     }
 }

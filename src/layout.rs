@@ -1,5 +1,5 @@
 pub mod layout {
-    use crate::dom::Node;
+    use crate::dom::{Node, NodeType};
     use std::collections::HashMap;
     use druid::Data;
 
@@ -11,7 +11,28 @@ pub mod layout {
         pub children: Vec<LayoutBox>,
     }
 
-    #[derive(Debug, Clone, Data)]
+    impl LayoutBox {
+        pub fn new(box_type: BoxType) -> Self {
+            LayoutBox {
+                dimensions: Dimensions::default(),
+                box_type,
+                children: Vec::new(),
+            }
+        }
+
+        fn calculate_dimensions(&mut self, node: &Node, styles: &HashMap<String, String>) {
+            // TODO: Implement dimension calculation based on styles
+        }
+
+        fn layout_children(&mut self, node: &Node, styles: &HashMap<String, String>) {
+            for child in node.children().iter() {
+                let child_box = LayoutEngine::layout(child, styles);
+                self.children.push(child_box);
+            }
+        }
+    }
+
+    #[derive(Debug, Clone, Data, Default)]
     pub struct Dimensions {
         pub content: Rect,
         pub padding: EdgeSizes,
@@ -19,7 +40,7 @@ pub mod layout {
         pub margin: EdgeSizes,
     }
 
-    #[derive(Debug, Clone, Data)]
+    #[derive(Debug, Clone, Data, Default)]
     pub struct Rect {
         pub x: f32,
         pub y: f32,
@@ -27,7 +48,7 @@ pub mod layout {
         pub height: f32,
     }
 
-    #[derive(Debug, Clone, Data)]
+    #[derive(Debug, Clone, Data, Default)]
     pub struct EdgeSizes {
         pub top: f32,
         pub right: f32,
@@ -46,46 +67,21 @@ pub mod layout {
 
     impl LayoutEngine {
         pub fn layout(node: &Node, styles: &HashMap<String, String>) -> LayoutBox {
-            let mut layout_box = LayoutBox {
-                dimensions: Dimensions {
-                    content: Rect {
-                        x: 0.0,
-                        y: 0.0,
-                        width: 800.0, // Default width
-                        height: 0.0,
-                    },
-                    padding: EdgeSizes {
-                        top: 0.0,
-                        right: 0.0,
-                        bottom: 0.0,
-                        left: 0.0,
-                    },
-                    border: EdgeSizes {
-                        top: 0.0,
-                        right: 0.0,
-                        bottom: 0.0,
-                        left: 0.0,
-                    },
-                    margin: EdgeSizes {
-                        top: 0.0,
-                        right: 0.0,
-                        bottom: 0.0,
-                        left: 0.0,
-                    },
-                },
-                box_type: BoxType::Block,
-                children: Vec::new(),
+            let box_type = match &*node.node_type {
+                NodeType::Element(tag) => {
+                    match tag.as_str() {
+                        "div" | "p" | "h1" | "h2" | "h3" => BoxType::Block,
+                        "span" | "a" | "strong" | "em" => BoxType::Inline,
+                        _ => BoxType::Block,
+                    }
+                }
+                NodeType::Text(_) => BoxType::Inline,
+                NodeType::Document => BoxType::Block,
             };
 
-            let mut current_y = 0.0;
-            for child in node.children.iter() {
-                let mut child_box = Self::layout(child, styles);
-                child_box.dimensions.content.y = current_y;
-                current_y += child_box.dimensions.content.height;
-                layout_box.children.push(child_box);
-            }
-
-            layout_box.dimensions.content.height = current_y;
+            let mut layout_box = LayoutBox::new(box_type);
+            layout_box.calculate_dimensions(node, styles);
+            layout_box.layout_children(node, styles);
             layout_box
         }
     }

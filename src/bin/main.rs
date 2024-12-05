@@ -184,6 +184,10 @@ struct BrowserState {
     #[data(ignore)]
     network_client: Arc<NetworkClient>,
     next_tab_id: usize,
+    #[data(ignore)]
+    html_parser: Arc<HTMLParser>,
+    #[data(ignore)]
+    css_parser: Arc<CSSParser>,
 }
 
 impl BrowserState {
@@ -194,6 +198,8 @@ impl BrowserState {
             url_bar: String::new(),
             network_client: Arc::new(NetworkClient::new()),
             next_tab_id: 1,
+            html_parser: Arc::new(HTMLParser::new()),
+            css_parser: Arc::new(CSSParser::new()),
         }
     }
 
@@ -220,12 +226,14 @@ impl BrowserState {
 
     async fn load_url(&mut self, url: &str) -> Result<(), BrowserError> {
         let content = self.network_client.fetch(url).await?;
+        let dom = self.html_parser.parse(&content)?;
         
         let mut tabs = (*self.tabs).clone();
         if let Some(tab) = tabs.get_mut(self.current_tab) {
             tab.history.push(url.to_string());
             tab.url = url.to_string();
             tab.content = content.clone();
+            tab.dom = Some(dom);
             tab.title = extract_title(&content).unwrap_or_else(|| "Untitled".to_string());
         }
         self.tabs = Arc::new(tabs);
@@ -277,30 +285,36 @@ fn extract_title(html: &str) -> Option<String> {
 fn build_ui() -> impl Widget<BrowserState> {
     let url_bar = TextBox::new()
         .lens(BrowserState::url_bar)
-        .fix_width(400.0)
-        .controller(UrlBarController::new());
+        .expand_width()
+        .controller(UrlBarController::new())
+        .padding(5.0);
 
-    let new_tab_button = Button::new("+")
+    let button_style = |btn: Button<BrowserState>| {
+        btn.fix_size(32.0, 32.0)
+           .padding(4.0)
+    };
+
+    let new_tab_button = button_style(Button::new("+")
         .on_click(|_ctx, data: &mut BrowserState, _env| {
             data.new_tab();
-        });
+        }));
 
-    let back_button = Button::new("←")
+    let back_button = button_style(Button::new("←")
         .on_click(|ctx, data: &mut BrowserState, _env| {
             if let Some(url) = data.navigate_back() {
                 let runtime = tokio::runtime::Handle::current();
                 let state = Arc::new(Mutex::new(data.clone()));
                 runtime.spawn(async move {
                     let mut data = state.lock().await;
-                        if let Err(e) = data.load_url(&url).await {
+                    if let Err(e) = data.load_url(&url).await {
                         eprintln!("Error navigating back: {}", e);
                     }
                 });
                 ctx.request_update();
             }
-        });
+        }));
 
-    let forward_button = Button::new("→")
+    let forward_button = button_style(Button::new("→")
         .on_click(|ctx, data: &mut BrowserState, _env| {
             if let Some(url) = data.navigate_forward() {
                 let runtime = tokio::runtime::Handle::current();
@@ -310,14 +324,13 @@ fn build_ui() -> impl Widget<BrowserState> {
                     if let Err(e) = data.load_url(&url).await {
                         eprintln!("Error navigating forward: {}", e);
                     }
-
                 });
                 ctx.request_update();
             }
-        });
+        }));
 
-    let refresh_button = Button::new("🔄")
-        .controller(RefreshController::new());
+    let refresh_button = button_style(Button::new("🔄")
+        .controller(RefreshController::new()));
 
     let content_area = ScrollableContent::new(
         Label::dynamic(|data: &BrowserState, _env: &_| {
@@ -325,22 +338,23 @@ fn build_ui() -> impl Widget<BrowserState> {
                 .map(|tab| tab.content.clone())
                 .unwrap_or_default()
         })
+        .with_text_size(14.0)
         .expand()
         .padding(10.0)
     );
 
     Flex::column()
-        .with_child(TabBar::new().fix_height(30.0))
+        .with_child(TabBar::new().fix_height(36.0))
         .with_child(
             Flex::row()
                 .with_child(back_button)
-                .with_spacer(5.0)
+                .with_spacer(2.0)
                 .with_child(forward_button)
-                .with_spacer(5.0)
+                .with_spacer(2.0)
                 .with_child(refresh_button)
-                .with_spacer(5.0)
-                .with_child(url_bar)
-                .with_spacer(5.0)
+                .with_spacer(8.0)
+                .with_flex_child(url_bar, 1.0)
+                .with_spacer(8.0)
                 .with_child(new_tab_button)
                 .padding(10.0),
         )
