@@ -1,21 +1,6 @@
 [package]
-name = "zip"
+name = "pulsar"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-tokio = { version = "1.28", features = ["full"] }
-reqwest = { version = "0.11", features = ["json"] }
-druid = "0.8"
-scraper = "0.18.1"
-cssparser = "0.31.2"
-selectors = "0.25.0"
-url = "2.4.1"
-log = "0.4"
-env_logger = "0.10"
-thiserror = "1.0"
-futures = "0.3"
-
-[lib]
-name = "zip"
-path = "src/lib.rs"

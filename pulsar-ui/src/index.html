@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>UE5 Editor Mockup</title>
+    <script src="tailwind.js"></script>
+    <style>
+      /* Custom colors to match UE5's darker theme */
+      :root {
+        --ue-dark: #0f0f0f;
+        --ue-darker: #1a1a1a;
+        --ue-panel: #222222;
+        --ue-button: #2a2a2a;
+        --ue-button-hover: #333333;
+        --ue-border: #3a3a3a;
+      }
+      body {
+        background-color: var(--ue-dark);
+        color: #cccccc;
+      }
+      .bg-ue-panel {
+        background-color: var(--ue-panel);
+      }
+      .bg-ue-button {
+        background-color: var(--ue-button);
+      }
+      .hover\:bg-ue-button-hover:hover {
+        background-color: var(--ue-button-hover);
+      }
+      .border-ue {
+        border-color: var(--ue-border);
+      }
+    </style>
+  </head>
+  <body>
+    <main class="h-screen flex flex-col">
+      <!-- Top Toolbar -->
+      <header class="bg-ue-panel h-12 flex items-center px-4 border-b border-ue">
+        <div class="flex space-x-4">
+          <button class="px-4 py-1.5 text-sm bg-ue-button hover:bg-ue-button-hover rounded">
+            File
+          </button>
+          <button class="px-4 py-1.5 text-sm bg-ue-button hover:bg-ue-button-hover rounded">
+            Edit
+          </button>
+          <button class="px-4 py-1.5 text-sm bg-ue-button hover:bg-ue-button-hover rounded">
+            Window
+          </button>
+          <button class="px-4 py-1.5 text-sm bg-ue-button hover:bg-ue-button-hover rounded">
+            Help
+          </button>
+        </div>
+      </header>
+
+      <!-- Main Content Area -->
+      <div class="flex flex-1 overflow-hidden">
+        <!-- Left Sidebar -->
+        <aside class="bg-ue-panel w-64 flex flex-col border-r border-ue">
+          <div class="p-4 border-b border-ue font-medium">Content Browser</div>
+          <ul class="flex-1 overflow-y-auto">
+            <li class="p-3 hover:bg-ue-button-hover cursor-pointer">Scene 1</li>
+            <li class="p-3 hover:bg-ue-button-hover cursor-pointer">Scene 2</li>
+            <li class="p-3 hover:bg-ue-button-hover cursor-pointer">Scene 3</li>
+          </ul>
+        </aside>
+
+        <!-- Viewport -->
+        <section class="flex-1 bg-ue-dark flex flex-col">
+          <div class="h-10 bg-ue-panel flex items-center px-4 border-b border-ue">
+            <p class="text-sm">Viewport Controls</p>
+          </div>
+          <div class="flex-1 bg-black">
+            <!-- Placeholder for the 3D viewport -->
+            <div class="flex items-center justify-center h-full text-gray-600">
+              <p>3D Viewport Area</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Right Sidebar -->
+        <aside class="bg-ue-panel w-64 flex flex-col border-l border-ue">
+          <div class="p-4 border-b border-ue font-medium">Details Panel</div>
+          <ul class="flex-1 overflow-y-auto">
+            <li class="p-3 hover:bg-ue-button-hover cursor-pointer">Property 1</li>
+            <li class="p-3 hover:bg-ue-button-hover cursor-pointer">Property 2</li>
+            <li class="p-3 hover:bg-ue-button-hover cursor-pointer">Property 3</li>
+          </ul>
+        </aside>
+      </div>
+
+      <!-- Bottom Bar -->
+      <footer class="bg-ue-panel h-10 flex items-center px-4 border-t border-ue">
+        <p class="text-sm">Output Log</p>
+      </footer>
+    </main>
+  </body>
+</html>

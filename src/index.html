@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dark Browser</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="browser.js" defer></script>
+</head>
+<body>
+    <div class="browser-window">
+        <div class="titlebar">
+            <div class="tab-bar">
+                <button class="new-tab">+</button>
+            </div>
+            <div class="window-controls">
+                <button class="window-button minimize" title="Minimize"></button>
+                <button class="window-button maximize" title="Maximize"></button>
+                <button class="window-button close" title="Close"></button>
+            </div>
+        </div>
+        <div class="toolbar">
+            <div class="nav-buttons">
+                <button class="nav-button back" disabled>←</button>
+                <button class="nav-button forward" disabled>→</button>
+                <button class="nav-button reload">↻</button>
+            </div>
+            <div class="address-bar">
+                <input type="text" placeholder="Enter URL or search terms">
+            </div>
+            <button class="vertical-tabs-toggle" title="Toggle Tab View">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor">
+                    <rect x="2" y="2" width="12" height="12" stroke-width="1.5"/>
+                    <line x1="6" y1="4" x2="14" y2="4" stroke-width="1.5"/>
+                    <line x1="6" y1="8" x2="14" y2="8" stroke-width="1.5"/>
+                    <line x1="6" y1="12" x2="14" y2="12" stroke-width="1.5"/>
+                </svg>
+            </button>
+            <div class="extensions">
+                <button class="nav-button" title="Ad Blocker">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor">
+                        <circle cx="8" cy="8" r="7" stroke-width="1.5"/>
+                        <line x1="3" y1="3" x2="13" y2="13" stroke-width="1.5"/>
+                    </svg>
+                </button>
+                <button class="nav-button" title="Dark Mode">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor">
+                        <path d="M8 12.5C10.4853 12.5 12.5 10.4853 12.5 8C12.5 5.51472 10.4853 3.5 8 3.5C5.51472 3.5 3.5 5.51472 3.5 8C3.5 10.4853 5.51472 12.5 8 12.5Z" stroke-width="1.5"/>
+                        <path d="M8 3.5C6 3.5 4.5 5 4.5 8C4.5 11 6 12.5 8 12.5C6 12.5 3.5 10.5 3.5 8C3.5 5.5 6 3.5 8 3.5Z" fill="currentColor"/>
+                    </svg>
+                </button>
+                <button class="nav-button" title="Password Manager">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor">
+                        <rect x="3" y="6" width="10" height="7" stroke-width="1.5"/>
+                        <path d="M5 6V4C5 2.89543 5.89543 2 7 2H9C10.1046 2 11 2.89543 11 4V6" stroke-width="1.5"/>
+                    </svg>
+                </button>
+            </div>
+            <button class="nav-button" title="Menu">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor">
+                    <line x1="3" y1="4" x2="13" y2="4" stroke-width="1.5"/>
+                    <line x1="3" y1="8" x2="13" y2="8" stroke-width="1.5"/>
+                    <line x1="3" y1="12" x2="13" y2="12" stroke-width="1.5"/>
+                </svg>
+            </button>
+        </div>
+        <div class="main-container">
+            <div class="vertical-tabs"></div>
+            <div class="browser-content">
+                <div class="loading-bar"></div>
+                <div id="content-container"></div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
